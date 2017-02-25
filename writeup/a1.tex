@@ -14,17 +14,37 @@
 \item{ \textbf{Nonlinear Activation Functions}
 \newline
 \newline
-\textbf{SIGMOID:}\newline
-$$\frac{\delta E} {\delta x_{in}} = \frac{\delta E}{\delta x_{out}} \cdot \frac{exp(x_{in})}{(1+exp(x_{in}))^2}$$
+\textbf{SIGMOID:}
 \newline
-\textbf{TANH:}\newline
-$$\frac{\delta E}{\delta x_{in}} =  \frac{\delta E}{\delta x_{out}} \cdot \frac{4 exp(2 x_{in})}{(exp(2 x_{in})+1)^2} $$
+\newline
+The sigmoid function can be expressed as:
+$$x_{out} = \frac{1}{1 + e^{-x_{in}}} = \frac{1}{1 + e^{-x_{in}}} \cdot \frac{e^{x_{in}}}{e^{x_{in}}} = \frac{e^{x_{in}}}{1+e^{x_{in}}} $$
+Then it follows that:
+$$\frac{\delta x_{out}}{\delta x_{in}} = \frac{(1+e^{x_{in}} )e^{x_{in}} - (0 + e^{x_{in}})e^{x_{in}}  } {(1+e^{{x_{in}}})^2} 
+= \frac{e^{x_{in}} + e^{2x_{in}} - e^{2x_{in} }} {(1+e^{x_{in}})^2} =  \frac{e^{x_{in}} } {(1+e^{x_{in}})^2} 
+$$
+Finally:
+$$\frac{\delta E} {\delta x_{in}} = \frac{\delta E}{\delta x_{out}} \cdot  \frac{\delta x_{out}}{\delta x_{in}}
+= \frac{\delta E}{\delta x_{out}} \cdot \frac{e^{x_{in}}}{(1+e^{x_{in}})^2}$$
+\newline
+\textbf{TANH:}
+\newline
+\newline
+The hyperbolic tangent function can be expressed as:
+$$x_{out} = \frac{exp(2x_{in})-1}{exp(2x_{in})+1}$$
+Then it follows that:
+$$ \frac{\delta x_{out}}{\delta x_{in}} = \frac{ ( exp(2x_{in})+1 )(2exp(2x_{in})) - (2exp(2x_{in}))(exp(2x_{in})-1)  }{ (exp(2x_{in})+1)^2 } $$
+$$ = \frac{ 2exp(4x_{in})+2exp(2x_{in})-2exp(4x_{in})+2exp(2 x_{in}) }{ (exp(2x_{in})+1)^2 } $$
+$$ = \frac{ 4 exp(2 x_{in}) }{(exp(2x_{in})+1)^2 }$$
+Finally:
+
+$$\frac{\delta E}{\delta x_{in}} = \frac{\delta E}{\delta x_{out}} \cdot  \frac{\delta x_{out}}{\delta x_{in}} =  \frac{\delta E}{\delta x_{out}} \cdot \frac{4 exp(2 x_{in})}{(exp(2 x_{in})+1)^2} $$
 \newline
 \textbf{RELU:}\newline
 \newline
-We write:
-$$\frac{\delta E}{\delta x_{in}} =  \frac{\delta E}{\delta x_{out}} \cdot \frac{\delta x_{out}}{\delta x_{in}}$$
-For the RELU unit, we notice that:
+The RELU function can be expressed as:
+$$x_{out} = max(0,x_{in})$$
+It follows that:
 \begin{equation}\frac{\delta x_{out}}{\delta x_{in}} = 
 \left\{
 	\begin{array}{ll}
@@ -35,20 +55,26 @@ For the RELU unit, we notice that:
 When we write $x_{in} = x_{in}^+ - x_{in}^-$, we can rewrite this as:
 $$\frac{\delta x_{out}}{\delta x_{in}} = sign(x_{in}^+) $$ 
 Therefore:
-$$\frac{\delta E}{\delta x_{in}} =  \frac{\delta E}{\delta x_{out}} \cdot sign(x_{in}^+) $$
+$$\frac{\delta E}{\delta x_{in}} =  \frac{\delta E}{\delta x_{out}} \cdot \frac{\delta x_{out}}{\delta x_{in}} = \frac{\delta E}{\delta x_{out}} \cdot sign(x_{in}^+) $$
 
 }
 
 \item{ \textbf{Softmax} 
 \newline
 \newline
-If $i \neq j$, then:
-$$\frac{\delta (x_{out})_i}{ \delta (x_{in})_j } = 
-\frac{\beta e^{\beta ( (x_{in})_i + (x_{in})_j )}}{ \Big( \sum_k e^{- \beta (x_{in})_k} \Big)^2} 
-$$
+We can express the softmax function as:
 
-If $i = j$, then:
-$$\frac{\delta (x_{out})_i}{ \delta (x_{in})_j } = \frac{\delta (x_{out})_i}{ \delta (x_{in})_i } = \frac{ - \beta e^{- \beta (x_{in})_i }  \Bigg[ \Big( \sum_k e^{- \beta (x_{in})_k} \Big) - e^{-\beta (x_{in})_i}  \Bigg] } {\Big( \sum_k e^{- \beta (x_{in})_k} \Big)^2 } $$
+$$p(y=i|x_{in}) = (x_{out})_i = \frac{e^{- \beta (x_{in})_i }}{ \sum_k e^{- \beta (x_{in})_k } }$$
+
+If $i \neq j$, then the numerator is constant with respect to $(x_{in})_j$. In this case, we write:
+$$\frac{\delta (x_{out})_i}{ \delta (x_{in})_j } 
+= e^{- \beta (x_{in})_i} \cdot -1 \cdot  \Big( \sum_k e^{- \beta (x_{in})_k} \Big)^{-2} \cdot - \beta e^{- \beta (x_{in})_j } $$
+$$ = \frac{\beta e^{-\beta ( (x_{in})_i + (x_{in})_j )}}{ \Big( \sum_k e^{- \beta (x_{in})_k} \Big)^2} $$
+
+If $i = j$, then we write:
+$$\frac{\delta (x_{out})_i}{ \delta (x_{in})_j } = \frac{\delta (x_{out})_i}{ \delta (x_{in})_i } $$
+$$ = \frac{ (-\beta e^{-\beta (x_{in})_i } ) \Big( \sum_k e^{- \beta (x_{in})_k} \Big) - (e^{-\beta (x_{in})_i )}) ( - \beta e^{-\beta (x_{in})_i  })}{\Big( \sum_k e^{- \beta (x_{in})_k} \Big)^2}$$
+$$ = \frac{ - \beta e^{- \beta (x_{in})_i }  \Bigg[ \Big( \sum_k e^{- \beta (x_{in})_k} \Big) - e^{-\beta (x_{in})_i}  \Bigg] } {\Big( \sum_k e^{- \beta (x_{in})_k} \Big)^2 } $$
 
 }
 \end{enumerate}

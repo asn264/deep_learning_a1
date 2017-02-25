@@ -18,7 +18,7 @@
 $$\frac{\delta E} {\delta x_{in}} = \frac{\delta E}{\delta x_{out}} \cdot \frac{exp(x_{in})}{(1+exp(x_{in}))^2}$$
 \newline
 \textbf{TANH:}\newline
-$$\frac{\delta E}{\delta x_{in}} =  \frac{\delta E}{\delta x_{out}} \cdot \frac{4 exp(4 x_{in})}{(exp(2 x_{in})+1)^2} $$
+$$\frac{\delta E}{\delta x_{in}} =  \frac{\delta E}{\delta x_{out}} \cdot \frac{4 exp(2 x_{in})}{(exp(2 x_{in})+1)^2} $$
 \newline
 \textbf{RELU:}\newline
 \newline
@@ -48,7 +48,7 @@ $$\frac{\delta (x_{out})_i}{ \delta (x_{in})_j } =
 $$
 
 If $i = j$, then:
-$$\frac{\delta (x_{out})_i}{ \delta (x_{in})_j } = \frac{\delta (x_{out})_i}{ \delta (x_{in})_i } = \frac{ - \beta e^{- \beta (x_{in})_i }  \Bigg[ \Big( \sum_k e^{- \beta (x_{in})_k} \Big) + e^{-\beta (x_{in})_i}  \Bigg] } {\Big( \sum_k e^{- \beta (x_{in})_k} \Big)^2 } $$
+$$\frac{\delta (x_{out})_i}{ \delta (x_{in})_j } = \frac{\delta (x_{out})_i}{ \delta (x_{in})_i } = \frac{ - \beta e^{- \beta (x_{in})_i }  \Bigg[ \Big( \sum_k e^{- \beta (x_{in})_k} \Big) - e^{-\beta (x_{in})_i}  \Bigg] } {\Big( \sum_k e^{- \beta (x_{in})_k} \Big)^2 } $$
 
 }
 \end{enumerate}

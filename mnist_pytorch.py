@@ -60,26 +60,78 @@ validset = pickle.load(open("validation.p", "rb"))
 testset = pickle.load(open("test.p","rb"))
 #trainset_unlabeled = pickle.load(open("train_unlabeled.p", "rb"))
 
-#################################################
-#Data augmentation section
-print(trainset_labeled[0][0].numpy()[0])
-print(scipy.misc.imrotate(trainset_labeled[0][0].numpy()[0],.7))
-sys.exit()
+#source of following function: http://stackoverflow.com/questions/37119071/scipy-rotate-and-zoom-an-image-without-changing-its-dimensions
+def clipped_zoom(img, zoom_factor, **kwargs):
+
+    h, w = img.shape[:2]
+
+    # width and height of the zoomed image
+    zh = int(np.round(zoom_factor * h))
+    zw = int(np.round(zoom_factor * w))
+
+    # for multichannel images we don't want to apply the zoom factor to the RGB
+    # dimension, so instead we create a tuple of zoom factors, one per array
+    # dimension, with 1's for any trailing dimensions after the width and height.
+    zoom_tuple = (zoom_factor,) * 2 + (1,) * (img.ndim - 2)
+
+    # zooming out
+    if zoom_factor < 1:
+        # bounding box of the clip region within the output array
+        top = (h - zh) // 2
+        left = (w - zw) // 2
+        # zero-padding
+        out = np.zeros_like(img)
+        out[top:top+zh, left:left+zw] = scipy.ndimage.zoom(img, zoom_tuple, **kwargs)
+
+    # zooming in
+    elif zoom_factor > 1:
+        # bounding box of the clip region within the input array
+        top = (zh - h) // 2
+        left = (zw - w) // 2
+        out = scipy.ndimage.zoom(img[top:top+zh, left:left+zw], zoom_tuple, **kwargs)
+        # `out` might still be slightly larger than `img` due to rounding, so
+        # trim off any extra pixels at the edges
+        trim_top = ((out.shape[0] - h) // 2)
+        trim_left = ((out.shape[1] - w) // 2)
+        out = out[trim_top:trim_top+h, trim_left:trim_left+w]
+
+    # if zoom_factor == 1, just return the input array
+    else:
+        out = img
+    return out
+
+
+#Data augmentation
 augmented_dataset = []
 for i in trainset_labeled:
-    #print(i[0].numpy())
-    rotation_degree = np.random.uniform(-60,60)
-    #augmented_dataset.append((torch.from_numpy(scipy.ndimage.rotate(i[0].numpy(),rotation_degree)),i[1]))
-    augmented_dataset.append((scipy.ndimage.rotate(i[0],rotation_degree),i[1]))
-    print(trainset_labeled[0])
-    print(augmented_dataset[0])
-    sys.exit()
-trainset_labeled = trainset_labeled + augmented_dataset
-print("Done augmenting dataset")
-#######################################################
+    #add original image
+    augmented_dataset.append(i)
+
+    #rotate image
+    rotation_degree = np.random.uniform(-45,45)
+    augmented_dataset.append((torch.from_numpy(np.array([scipy.ndimage.rotate(i[0].numpy()[0],rotation_degree,reshape=False)])),i[1]))
+    
+    #shift image (translation in both x and y axes)
+    shift_amount = np.random.uniform(-2,2)
+    augmented_dataset.append((torch.from_numpy(np.array([scipy.ndimage.shift(i[0].numpy()[0],shift_amount)])),i[1]))
+
+    #zoom in or out of image
+    
+    #choose magnitude of amount to either zoom in or zoom out
+    zoom_amount = np.random.uniform(1,2)
+    
+    #pick either 0 or 1, like a binary coin flip
+    random_draw = np.random.randint(0,2)
+
+    if random_draw==0: #zoom out
+        zoom_amount = 1/zoom_amount
+    else: #zoom in 
+        zoom_amount = 1 * zoom_amount
+
+    augmented_dataset.append((torch.from_numpy(np.array([clipped_zoom(i[0].numpy()[0],zoom_amount)])),i[1]))
 
 
-train_loader = torch.utils.data.DataLoader(trainset_labeled, batch_size=64, shuffle=True, **kwargs)
+train_loader = torch.utils.data.DataLoader(augmented_dataset, batch_size=64, shuffle=True, **kwargs)
 valid_loader = torch.utils.data.DataLoader(validset, batch_size=64, shuffle=True)
 test_loader = torch.utils.data.DataLoader(testset, batch_size=len(testset), shuffle=True)
 
@@ -117,6 +169,8 @@ class Net(nn.Module):
         x = F.dropout(x, training=self.training)
         x = F.relu(self.fc2(x))
         return F.log_softmax(x)
+
+
 
 
 model = Net()

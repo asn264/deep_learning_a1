@@ -116,7 +116,7 @@ for i in trainset_labeled:
     augmented_dataset.append((torch.from_numpy(np.array([scipy.ndimage.shift(i[0].numpy()[0],shift_amount)])),i[1]))
 
     #zoom in or out of image
-    
+
     #choose magnitude of amount to either zoom in or zoom out
     zoom_amount = np.random.uniform(1,2)
     
@@ -217,5 +217,4 @@ def test(epoch, valid_loader):
 for epoch in range(1, args.epochs + 1):
     train(epoch)
     test(epoch, valid_loader)
-test(epoch,test_loader)
 

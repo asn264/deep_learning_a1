@@ -16,6 +16,7 @@ import scipy.ndimage
 import sys
 
 import matplotlib.pyplot as plt
+import itertools
 
 # Training settings
 parser = argparse.ArgumentParser(description='PyTorch MNIST Example')
@@ -42,7 +43,6 @@ torch.manual_seed(args.seed)
 if args.cuda:
     torch.cuda.manual_seed(args.seed)
 
-
 kwargs = {'num_workers': 1, 'pin_memory': True} if args.cuda else {}
 
 # train_loader = torch.utils.data.DataLoader(
@@ -59,7 +59,7 @@ print('loading data!')
 trainset_labeled = pickle.load(open("train_labeled.p", "rb"))
 validset = pickle.load(open("validation.p", "rb"))
 testset = pickle.load(open("test.p","rb"))
-#trainset_unlabeled = pickle.load(open("train_unlabeled.p", "rb"))
+trainset_unlabeled = pickle.load(open("train_unlabeled.p", "rb"))
 
 #source of following function: http://stackoverflow.com/questions/37119071/scipy-rotate-and-zoom-an-image-without-changing-its-dimensions
 def clipped_zoom(img, zoom_factor, **kwargs):
@@ -135,6 +135,11 @@ for i in trainset_labeled:
 train_loader = torch.utils.data.DataLoader(augmented_dataset, batch_size=64, shuffle=True, **kwargs)
 valid_loader = torch.utils.data.DataLoader(validset, batch_size=64, shuffle=True)
 test_loader = torch.utils.data.DataLoader(testset, batch_size=len(testset), shuffle=True)
+unlab_loader = torch.utils.data.DataLoader(trainset_unlabeled, batch_size=256, shuffle=True)
+
+#currently the labels for the unlab data are set to None, so it loader wont work
+unlab_loader.dataset.train_labels=torch.LongTensor([-1]*len(unlab_loader.dataset)) #initialize these to dummy value
+
 
 # test_loader = torch.utils.data.DataLoader(
 #     datasets.MNIST('../data', train=False, transform=transforms.Compose([
@@ -177,18 +182,31 @@ if args.cuda:
     model.cuda()
 
 optimizer = optim.SGD(model.parameters(), lr=args.lr, momentum=args.momentum)
+#optimizer = optim.Adam(model.parameters(), lr=0.0001)
 
-def train(epoch):
+def train(epoch, T1, T2, alpha_f):
+
     model.train()
-    for batch_idx, (data, target) in enumerate(train_loader):
+    #izip stops when the shorter one (train_loader) is exhausted. can tweak batch sizes (line 138) to include all data
+    for (batch_idx, (data, target)), (unlab_data, unlab_target) in itertools.izip(enumerate(train_loader),unlab_loader):
+        
         if args.cuda:
             data, target = data.cuda(), target.cuda()
+            unlab_data, unlab_target = unlab_data.cuda(), unlab_target.cuda()
+
         data, target = Variable(data), Variable(target)
+        unlab_data, unlab_target = Variable(unlab_data), Variable(unlab_target)
+
         optimizer.zero_grad()
+        
         output = model(data)
-        loss = F.nll_loss(output, target)
+        output_unlab = model(unlab_data)
+
+        loss = (F.nll_loss(output, target) + pseudo_weight(epoch, T1=T1, T2=T2, alpha_f=alpha_f)*F.nll_loss(output_unlab,unlab_target)) #apply weighted pseudo
+        
         loss.backward()
         optimizer.step()
+        
         if batch_idx % args.log_interval == 0:
             print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
                 epoch, batch_idx * len(data), len(train_loader.dataset),
@@ -204,7 +222,7 @@ def test(epoch, valid_loader, test_type):
             data, target = data.cuda(), target.cuda()
         data, target = Variable(data, volatile=True), Variable(target)
         output = model(data)
-        test_loss += F.nll_loss(output, target).data[0]
+        test_loss += (F.nll_loss(output, target).data[0]) #don't apply pseudo here
         pred = output.data.max(1)[1] # get the index of the max log-probability
         correct += pred.eq(target.data).cpu().sum()
 
@@ -212,22 +230,68 @@ def test(epoch, valid_loader, test_type):
     print('\n' + test_type + ' set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.format(
         test_loss, correct, len(valid_loader.dataset),
         100. * correct / len(valid_loader.dataset)))
-    return 100. * correct / len(valid_loader.dataset)
+    return test_loss
+
+
+def pseudo_weight(t,T1=100,T2=600,alpha_f=3):
+
+    '''
+    EQN 16 from: http://deeplearning.net/wp-content/uploads/2013/03/pseudo_label_final.pdf
+    
+    Default values for T1, T2 and alpha_f are from paper
+    '''
+
+    if t < T1:
+        return 0
+    elif t >= T2:
+        return alpha_f 
+    else: #T1 <= t < T2
+        return alpha_f*(t-T1)/float(T2-T1) 
+
+
+def update_unlabeled():
+    
+    model.eval() #set model in eval mode  
+
+    for idx, (data, target) in enumerate(unlab_loader):
+        if args.cuda:
+            data, target = data.cuda(), target.cuda()
+        data = Variable(data, volatile=True)
+        output = model(data)
+        pred = output.data.max(1)[1]
+
+        if len(pred)==unlab_loader.batch_size:
+            unlab_loader.dataset.train_labels[idx*unlab_loader.batch_size:(idx+1)*unlab_loader.batch_size] = pred
+        else:
+            unlab_loader.dataset.train_labels[idx*unlab_loader.batch_size:] = pred
+    
+    #print (unlab_loader.dataset.train_labels)
+    #print (sum([i==-1 for i in unlab_loader.dataset.train_labels]))
 
 
 train_accs=[]
 dev_accs=[]
+T1 = 1
+T2 = 6
+alpha_f = 3
 for epoch in range(1, args.epochs + 1):
+
+    '''
+    we implement pseudo-labels to update every epoch, starting at epoch = T1 
+    '''
+    if epoch >= T1: #update pseudolabels for unlabeled data
+        update_unlabeled()
     
-    train(epoch)
+    train(epoch, T1, T2, alpha_f)
     c_train_acc = test(epoch, train_loader, 'Train')
     c_dev_acc = test(epoch, valid_loader, 'Dev')
 
     dev_accs.append(c_dev_acc) #updates loss for plot 
     train_accs.append(c_train_acc) 
 
+
 plt.plot(np.arange(args.epochs), dev_accs, marker='o', label='Validation Accuracy')
 plt.plot(np.arange(args.epochs), train_accs, marker='o', label='Train Accuracy')
-plt.title('MNIST: Train and Validation Accuracies')
+plt.title('MNIST: Train and Validation Losses')
 plt.legend(loc='upper left')
-plt.savefig('accuracies.jpg')
+plt.savefig('losses.jpg')

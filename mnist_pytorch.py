@@ -131,7 +131,7 @@ for i in trainset_labeled:
 
     augmented_dataset.append((torch.from_numpy(np.array([clipped_zoom(i[0].numpy()[0],zoom_amount)])),i[1]))
 
-
+#orig_loader = torch.utils.data.DataLoader(trainset_labeled, batch_size=64, shuffle=True, **kwargs)
 train_loader = torch.utils.data.DataLoader(augmented_dataset, batch_size=64, shuffle=True, **kwargs)
 valid_loader = torch.utils.data.DataLoader(validset, batch_size=64, shuffle=True)
 test_loader = torch.utils.data.DataLoader(testset, batch_size=len(testset), shuffle=True)
@@ -195,11 +195,11 @@ def train(epoch):
                 100. * batch_idx / len(train_loader), loss.data[0]))
 
 
-def test(epoch, valid_loader, test_type):
+def test(epoch, loader, test_type):
     model.eval()
     test_loss = 0
     correct = 0
-    for data, target in valid_loader:
+    for data, target in loader:
         if args.cuda:
             data, target = data.cuda(), target.cuda()
         data, target = Variable(data, volatile=True), Variable(target)
@@ -208,24 +208,28 @@ def test(epoch, valid_loader, test_type):
         pred = output.data.max(1)[1] # get the index of the max log-probability
         correct += pred.eq(target.data).cpu().sum()
 
-    test_loss /= len(valid_loader) # loss function already averages over batch size
+    test_loss /= len(loader) # loss function already averages over batch size
     print('\n' + test_type + ' set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.format(
-        test_loss, correct, len(valid_loader.dataset),
-        100. * correct / len(valid_loader.dataset)))
-    return 100. * correct / len(valid_loader.dataset)
+        test_loss, correct, len(loader.dataset),
+        100. * correct / len(loader.dataset)))
+    return 100. * correct / len(loader.dataset)
 
 
 train_accs=[]
 dev_accs=[]
+#orig_accs=[]
 for epoch in range(1, args.epochs + 1):
     
     train(epoch)
     c_train_acc = test(epoch, train_loader, 'Train')
     c_dev_acc = test(epoch, valid_loader, 'Dev')
+    c_orig_acc = test(epoch, orig_loader, 'Orig')
 
     dev_accs.append(c_dev_acc) #updates loss for plot 
     train_accs.append(c_train_acc) 
+    #orig_accs.append(c_orig_acc)
 
+#plt.plot(np.arange(args.epochs), orig_accs, marker='o', label='Orig Accuracy')
 plt.plot(np.arange(args.epochs), dev_accs, marker='o', label='Validation Accuracy')
 plt.plot(np.arange(args.epochs), train_accs, marker='o', label='Train Accuracy')
 plt.title('MNIST: Train and Validation Accuracies')

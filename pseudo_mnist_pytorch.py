@@ -187,22 +187,29 @@ optimizer = optim.SGD(model.parameters(), lr=args.lr, momentum=args.momentum)
 def train(epoch, T1, T2, alpha_f):
 
     model.train()
+    
     #izip stops when the shorter one (train_loader) is exhausted. can tweak batch sizes (line 138) to include all data
-    for (batch_idx, (data, target)), (unlab_data, unlab_target) in itertools.izip(enumerate(train_loader),unlab_loader):
+    for (batch_idx, (data, target)), (unlab_data, unlab_old_target) in itertools.izip(enumerate(train_loader),unlab_loader):
         
         if args.cuda:
             data, target = data.cuda(), target.cuda()
-            unlab_data, unlab_target = unlab_data.cuda(), unlab_target.cuda()
+            #unlab_data, unlab_target = unlab_data.cuda(), unlab_target.cuda()
+            unlab_data = unlab_data.cuda()
 
         data, target = Variable(data), Variable(target)
-        unlab_data, unlab_target = Variable(unlab_data), Variable(unlab_target)
+        #unlab_data, unlab_target = Variable(unlab_data), Variable(unlab_target)
+        unlab_data = Variable(unlab_data)
 
         optimizer.zero_grad()
         
         output = model(data)
         output_unlab = model(unlab_data)
 
-        loss = (F.nll_loss(output, target) + pseudo_weight(epoch, T1=T1, T2=T2, alpha_f=alpha_f)*F.nll_loss(output_unlab,unlab_target)) #apply weighted pseudo
+        #get new labels for unlab data
+        unlab_new_target = output_unlab.data.max(1)[1]
+        unlab_new_target = Variable(unlab_new_target)
+
+        loss = (F.nll_loss(output, target) + pseudo_weight(epoch, T1=T1, T2=T2, alpha_f=alpha_f)*F.nll_loss(output_unlab,unlab_new_target)) #apply weighted pseudo
         
         loss.backward()
         optimizer.step()
@@ -279,8 +286,8 @@ for epoch in range(1, args.epochs + 1):
     '''
     we implement pseudo-labels to update every epoch, starting at epoch = T1 
     '''
-    if epoch >= T1: #update pseudolabels for unlabeled data
-        update_unlabeled()
+    #if epoch >= T1: #update pseudolabels for unlabeled data
+    #    update_unlabeled()
     
     train(epoch, T1, T2, alpha_f)
     c_train_acc = test(epoch, train_loader, 'Train')
@@ -288,7 +295,6 @@ for epoch in range(1, args.epochs + 1):
 
     dev_accs.append(c_dev_acc) #updates loss for plot 
     train_accs.append(c_train_acc) 
-
 
 plt.plot(np.arange(args.epochs), dev_accs, marker='o', label='Validation Accuracy')
 plt.plot(np.arange(args.epochs), train_accs, marker='o', label='Train Accuracy')

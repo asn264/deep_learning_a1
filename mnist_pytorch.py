@@ -13,6 +13,8 @@ from torch.autograd import Variable
 
 import scipy.misc
 import scipy.ndimage
+from scipy.ndimage.interpolation import map_coordinates
+from scipy.ndimage.filters import gaussian_filter
 import sys
 
 import matplotlib.pyplot as plt
@@ -61,6 +63,7 @@ validset = pickle.load(open("validation.p", "rb"))
 testset = pickle.load(open("test.p","rb"))
 #trainset_unlabeled = pickle.load(open("train_unlabeled.p", "rb"))
 
+
 #source of following function: http://stackoverflow.com/questions/37119071/scipy-rotate-and-zoom-an-image-without-changing-its-dimensions
 def clipped_zoom(img, zoom_factor, **kwargs):
 
@@ -102,6 +105,30 @@ def clipped_zoom(img, zoom_factor, **kwargs):
     return out
 
 
+#source of following function: https://gist.github.com/chsasank/4d8f68caf01f041a6453e67fb30f8f5a
+def elastic_transform(image, alpha, sigma, random_state=None):
+    """Elastic deformation of images as described in [Simard2003]_.
+    .. [Simard2003] Simard, Steinkraus and Platt, "Best Practices for
+       Convolutional Neural Networks applied to Visual Document Analysis", in
+       Proc. of the International Conference on Document Analysis and
+       Recognition, 2003.
+    """
+    assert len(image.shape)==2
+
+    if random_state is None:
+        random_state = np.random.RandomState(None)
+
+    shape = image.shape
+
+    dx = gaussian_filter((random_state.rand(*shape) * 2 - 1), sigma, mode="constant", cval=0) * alpha
+    dy = gaussian_filter((random_state.rand(*shape) * 2 - 1), sigma, mode="constant", cval=0) * alpha
+
+    x, y = np.meshgrid(np.arange(shape[0]), np.arange(shape[1]), indexing='ij')
+    indices = np.reshape(x+dx, (-1, 1)), np.reshape(y+dy, (-1, 1))
+    
+    return map_coordinates(image, indices, order=1).reshape(shape)
+
+
 #Data augmentation
 augmented_dataset = []
 for i in trainset_labeled:
@@ -131,7 +158,13 @@ for i in trainset_labeled:
 
     augmented_dataset.append((torch.from_numpy(np.array([clipped_zoom(i[0].numpy()[0],zoom_amount)])),i[1]))
 
-#orig_loader = torch.utils.data.DataLoader(trainset_labeled, batch_size=64, shuffle=True, **kwargs)
+
+    #apply elastic distortion to image
+    sigma = np.random.uniform(5,6)
+    alpha = np.random.uniform(36,38)
+    augmented_dataset.append((torch.from_numpy(np.array([elastic_transform(i[0].numpy()[0],alpha,sigma)])),i[1]))
+
+orig_loader = torch.utils.data.DataLoader(trainset_labeled, batch_size=64, shuffle=True, **kwargs)
 train_loader = torch.utils.data.DataLoader(augmented_dataset, batch_size=64, shuffle=True, **kwargs)
 valid_loader = torch.utils.data.DataLoader(validset, batch_size=64, shuffle=True)
 test_loader = torch.utils.data.DataLoader(testset, batch_size=len(testset), shuffle=True)
@@ -234,4 +267,4 @@ plt.plot(np.arange(args.epochs), dev_accs, marker='o', label='Validation Accurac
 plt.plot(np.arange(args.epochs), train_accs, marker='o', label='Train Accuracy')
 plt.title('MNIST: Train and Validation Accuracies')
 plt.legend(loc='upper left')
-plt.savefig('accuracies.jpg')
+plt.savefig('accuracies_with_distortion.jpg')

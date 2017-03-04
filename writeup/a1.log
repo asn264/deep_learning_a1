@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2016.5.22)  25 FEB 2017 15:55
+This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2016.5.22)  4 MAR 2017 10:14
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -171,22 +171,22 @@ File: omscmr.fd 2014/09/29 v2.5h Standard LaTeX font definitions
 LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <10> not available
 (Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 116.
 
-Underfull \hbox (badness 10000) in paragraph at lines 126--133
+Underfull \hbox (badness 10000) in paragraph at lines 129--136
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 126--133
+Underfull \hbox (badness 10000) in paragraph at lines 129--136
 
  []
 
 [3]
-Underfull \hbox (badness 10000) in paragraph at lines 135--142
+Underfull \hbox (badness 10000) in paragraph at lines 138--145
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 135--142
+Underfull \hbox (badness 10000) in paragraph at lines 138--145
 
  []
 
@@ -194,7 +194,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 135--142
 Here is how much of TeX's memory you used:
  1200 strings out of 493014
  13865 string characters out of 6133351
- 72434 words of memory out of 5000000
+ 73434 words of memory out of 5000000
  4770 multiletter control sequences out of 15000+600000
  11503 words of font info for 45 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
@@ -213,7 +213,7 @@ b></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb><
 usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></us
 r/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb>
 
-Output written on a1.pdf (4 pages, 148724 bytes).
+Output written on a1.pdf (4 pages, 150456 bytes).
 PDF statistics:
  69 PDF objects out of 1000 (max. 8388607)
  49 compressed objects within 1 object stream

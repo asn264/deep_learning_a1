@@ -111,12 +111,15 @@ Now, on average, the values propagated from this unit will be very different fro
 $$\mathbb{E}[x_i] = p \cdot x_i = p x_i   $$
 
 }
-\item{Rather than obtain more labeled training data, we can augment the current dataset by including transformed versions of the original dataset including: 
+\item{Common data augmentation methods, which increase the size of the training set by transforming the original data, include: 
 \begin{itemize}
 \item{Rotationed, translated and zoomed-in or zoomed-out versions of the original images.}
 \item{Stretched or squeezed versions of the original images.}
+\item{Horizontally or vertically reflected versions of the original images}
 \item{Elastic distortions of the original image, which is a type of image distortion that mimics natural oscillations in handwriting.}
 \end{itemize}
+
+Of the methods listed above, all of them would be appropriate for the MNIST dataset except for horizontal or vertical reflections, as a vertically reflected 2 could look like a 5, and horizontally reflected digits would not be classified as the same digit by humans. Also, one thing to keep in mind with rotation is that we must limit the rotation degree as a 9 rotated more than 90$^{\circ}$ or less than -90$^{\circ}$ would look more like a 6 than a 9.
 
 }
 \end{enumerate}

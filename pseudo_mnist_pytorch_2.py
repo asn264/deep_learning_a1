@@ -48,15 +48,6 @@ if args.cuda:
 
 kwargs = {'num_workers': 1, 'pin_memory': True} if args.cuda else {}
 
-# train_loader = torch.utils.data.DataLoader(
-#     datasets.MNIST('../data', train=True, download=True,
-#                    transform=transforms.Compose([
-#                        transforms.ToTensor(),
-#                        transforms.Normalize((0.1307,), (0.3081,))
-#                    ])),
-#     batch_size=args.batch_size, shuffle=True, **kwargs)
-
-
 
 print('loading data!')
 trainset_labeled = pickle.load(open("train_labeled.p", "rb"))
@@ -66,6 +57,9 @@ trainset_unlabeled = pickle.load(open("train_unlabeled.p", "rb"))
 
 #source of following function: http://stackoverflow.com/questions/37119071/scipy-rotate-and-zoom-an-image-without-changing-its-dimensions
 def clipped_zoom(img, zoom_factor, **kwargs):
+    """
+    function to zoom in or out of an image. if we zoom out the image is then padded to the original size
+    """
 
     h, w = img.shape[:2]
 
@@ -130,18 +124,21 @@ def elastic_transform(image, alpha, sigma, random_state=None):
 
 
 #Data augmentation
-"""augmented_dataset = []
+augmented_dataset = []
 for i in trainset_labeled:
     #add original image
     augmented_dataset.append(i)
+
 
     #rotate image
     rotation_degree = np.random.uniform(-45,45)
     augmented_dataset.append((torch.from_numpy(np.array([scipy.ndimage.rotate(i[0].numpy()[0],rotation_degree,reshape=False)])),i[1]))
     
+
     #shift image (translation in both x and y axes)
     shift_amount = np.random.uniform(-2,2)
     augmented_dataset.append((torch.from_numpy(np.array([scipy.ndimage.shift(i[0].numpy()[0],shift_amount)])),i[1]))
+
 
     #zoom in or out of image
 
@@ -164,10 +161,10 @@ for i in trainset_labeled:
     sigma = np.random.uniform(5,6)
     alpha = np.random.uniform(36,38)
     augmented_dataset.append((torch.from_numpy(np.array([elastic_transform(i[0].numpy()[0],alpha,sigma)])),i[1]))
-"""
 
-#train_loader = torch.utils.data.DataLoader(augmented_dataset, batch_size=64, shuffle=True, **kwargs)
-train_loader = torch.utils.data.DataLoader(trainset_labeled, batch_size=64, shuffle=True, **kwargs)
+
+orig_loader = torch.utils.data.DataLoader(trainset_labeled, batch_size=64, shuffle=True, **kwargs)
+train_loader = torch.utils.data.DataLoader(augmented_dataset, batch_size=64, shuffle=True, **kwargs)
 valid_loader = torch.utils.data.DataLoader(validset, batch_size=64, shuffle=True)
 test_loader = torch.utils.data.DataLoader(testset, batch_size=len(testset), shuffle=True)
 unlab_loader = torch.utils.data.DataLoader(trainset_unlabeled, batch_size=256, shuffle=True)
@@ -176,27 +173,23 @@ unlab_loader = torch.utils.data.DataLoader(trainset_unlabeled, batch_size=256, s
 unlab_loader.dataset.train_labels=torch.LongTensor([0]*len(unlab_loader.dataset)) #initialize these to dummy value
 
 
-# test_loader = torch.utils.data.DataLoader(
-#     datasets.MNIST('../data', train=False, transform=transforms.Compose([
-#                        transforms.ToTensor(),
-#                        transforms.Normalize((0.1307,), (0.3081,))
-#                    ])),
-#     batch_size=args.batch_size, shuffle=True, **kwargs)
-
 class Net(nn.Module):
     def __init__(self):
         super(Net, self).__init__()
         self.conv1 = nn.Conv2d(1, 10, kernel_size=5)
         self.conv2 = nn.Conv2d(10, 20, kernel_size=5)
+        self.conv2_bn = nn.BatchNorm2d(20)
         self.conv2_drop = nn.Dropout2d()
         self.fc1 = nn.Linear(320, 50)
         self.fc2 = nn.Linear(50, 10)
 
-        #Xavier weight initialization
+        #weight initialization
         for m in self.modules():
+            #using He et al. initialization method for convolutional layers, based on dimension of inputs
             if isinstance(m, nn.Conv2d):
                 n = m.kernel_size[0] * m.kernel_size[1] * m.out_channels
                 m.weight.data.normal_(0, math.sqrt(2. / n))
+            #using Xavier initialization method for fully connected layers, based on number of input and output units
             elif isinstance(m, nn.Linear):
                 n_in = m.in_features
                 n_out = m.out_features
@@ -204,7 +197,7 @@ class Net(nn.Module):
 
     def forward(self, x):
         x = F.relu(F.max_pool2d(self.conv1(x), 2))
-        x = F.relu(F.max_pool2d(self.conv2_drop(self.conv2(x)), 2))
+        x = F.relu(F.max_pool2d(self.conv2_drop(self.conv2_bn(self.conv2(x))), 2)) #add batch normalization after convolution
         x = x.view(-1, 320)
         x = F.relu(self.fc1(x))
         x = F.dropout(x, training=self.training)
@@ -306,6 +299,7 @@ def update_unlabeled():
 
 train_accs=[]
 dev_accs=[]
+orig_accs=[]
 T1 = 100
 T2 = 600
 alpha_f = 3
@@ -320,14 +314,16 @@ for epoch in range(1, args.epochs + 1):
     train(epoch, T1, T2, alpha_f)
     c_train_acc = test(epoch, train_loader, 'Train')
     c_dev_acc = test(epoch, valid_loader, 'Dev')
+    c_orig_acc = test(epoch, orig_loader, 'Orig Train')
 
     dev_accs.append(c_dev_acc) #updates loss for plot 
-    train_accs.append(c_train_acc) 
+    train_accs.append(c_train_acc)
+    orig_accs.append(c_orig_acc) 
 
-"""
+plt.plot(np.arange(args.epochs), orig_accs, marker='o', label='Train Accuracy')
 plt.plot(np.arange(args.epochs), dev_accs, marker='o', label='Validation Accuracy')
-plt.plot(np.arange(args.epochs), train_accs, marker='o', label='Train Accuracy')
-plt.title('MNIST: Train and Validation Losses')
-plt.legend(loc='upper left')
-plt.savefig('losses.jpg')
-"""
+plt.plot(np.arange(args.epochs), train_accs, marker='o', label='Augmented Accuracy')
+plt.xlabel('Epochs')
+plt.title('MNIST: Train and Validation Accuracies')
+plt.legend(loc='bottom right')
+plt.savefig('plots/accuracies.jpg')

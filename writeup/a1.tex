@@ -130,10 +130,10 @@ Of the methods listed above, all of them would be appropriate for the MNIST data
 \item{ We need to be careful about how we initialize weights in a neural network. If the weights of a matrix/vector are too small, then the signal will ``shrink" as it passes through these units. If they are too big, the signal may explode and learning will diverge. For this reason, we rely on initialization methods to start off the weights at a safe range. 
 \newline
 \newline
-In Xavier initialization, we choose $w_{ij}$ in a weight matrix $W$ from uniform (or Gaussian) distribution with $\mu=0$ and $\sigma^2 = \frac{1}{N}$ where $N$ is the number of input neurons to the corresponding unit. Generally, this initialization ensures that the variance of the input gradient and output gradient are the same in networks using non-linearities like the sigmoid and hyperbolic tangent functions.
+In Xavier initialization, we choose $w_{ij}$ in a weight matrix $W$ from uniform (or Gaussian) distribution with $\mu=0$ and $\sigma^2 = \frac{1}{n_i}$ where $n_i$ is the number of input neurons to the corresponding unit. Analogously, we would also want $\sigma^2 = \frac{1}{n_o}$ where $n_o$ is the number of output neurons to the corresponding unit. In order to satisfy these simulatanously, Xavier et al. sugguests an initialization strategy of $\sigma^2 = \frac{1}{n_i + n_o}$ Generally, this initialization ensures that the variance of the input gradient and output gradient are the same in networks using non-linearities like the sigmoid and hyperbolic tangent functions.
 \newline
 \newline
-However, since the authors of the Xavier method derived the parameters for the distribution of $W_{ij}$ based on properties of the sigmoid and hyperbolic tangent function, this is not necessarily well-suited for networks using RELU units, whose gradients generally behave very differently. Based on properties of the RELU unit, He et al. recommend choosing $w_{ij}$ from a Gaussian distribution with $\mu=0$ and $\sigma^2=\frac{2}{N}$. 
+However, since the authors of the Xavier method derived the parameters for the distribution of $W_{ij}$ based on properties of the sigmoid and hyperbolic tangent function, this is not necessarily well-suited for networks using RELU units, whose gradients generally behave very differently. Based on properties of the RELU unit, He et al. recommend choosing $w_{ij}$ from a Gaussian distribution with $\mu=0$ and $\sigma^2=\frac{2}{n_i}$. 
 
 }
 \item{ The VGG team first trained a small, shallow network. Next, they trained a deeper network where the first four and last three layers of the network were initialized with the trained weights from the first shallow model. These weights were allowed to change during the training procedure, and other weights in the deeper model were randomly initialized. 
@@ -170,7 +170,7 @@ Below, we show the training and validation curves for a baseline model trained u
   \label{fig:boat1}
 \end{figure}
 
-Next, we applied Xavier initialization with [INSERT FORMULAS] for fully connected network modules, and [EXPLAIN] for convolutional layers. This is because [INSERT EXPLANATION]. The training and validation curves for our baseline model plus Xavier initialization is shown below.
+Next, we applied initialization from the Xavier/He papers with $\sigma^2 = \frac{1}{n_i + n_o}$ for fully connected network modules, and $\sigma^2 = \frac{1}{n_i}$ for convolutional layers. As the number of input and output neurons for fully connected layers are readily accessible, we went with the Xavier initialization for them while using He initialization for the convolutional layers. The training and validation curves for our baseline model plus Xavier initialization is shown below.
 
 \begin{figure}
   \includegraphics[width=12cm]{../plots/accuracies_xavier.jpg}
@@ -179,7 +179,7 @@ Next, we applied Xavier initialization with [INSERT FORMULAS] for fully connecte
   \label{fig:boat1}
 \end{figure}
 
-Finally, we applied data augmentation to the dataset. [INSERT DESCRIPTION OF DATA AUGMENTATION]. 
+Finally, we applied data augmentation to the dataset. Our data augmentation process was done offline, so the train set was enchanced before we started training. We first added a rotated version of the image, where the rotation parameter was between -45 and 45 degrees. Then, we added a translated version of the image, where both the x and y coordinates were translated by a random number of pixels between -2 and 2. Next, we added a zoomed in/out version of the image by randomly picking to zoom in or zoom out, and then choosing a scaling coefficient between 1 and 2. The last data augmentation method we used was elastic distortion. The parameters were randomly chosen in the following ranges $\sigma \in (5,6)$ and $\alpha \in (36,38)$ as suggested in the following \href{https://arxiv.org/pdf/1103.4487.pdf}{paper}.
 \newline
 \newline
 Surprisingly, we noticed that the model accuracy on the augmented training set was significantly lower than the model accuracy on the validation set. For this reason, we also evaluated the model accuracy on the original, un-augmented training set (shown in blue in the graph below), which behaves as expected in comparison to the model accuracy on the validation set. We surmised that model performance on the augmented dataset was poor compared to performance on the original training and validation sets because the classification task on the augmented dataset was significantly harder. In the augmented dataset, there is most likely a higher proportion of images which are difficult to classify - those that are rotated, zoomed, or otherwise distorted in a manner that might be uncommon in natural human writing - and which are accordingly infrequent in the un-augmented training and validation sets. 

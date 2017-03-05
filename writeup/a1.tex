@@ -1,6 +1,7 @@
 \documentclass[a4paper]{article}
 
 \usepackage{fullpage, amsmath, amssymb, verbatim} % Package to use full page
+\usepackage{graphicx}
 
 \title{Deep Learning: Assignment One}
 \author{Aditi Nair (asn264) and Akash Shah (ass502)}
@@ -139,10 +140,62 @@ However, since the authors of the Xavier method derived the parameters for the d
 \newline
 \newline 
 Coate et al. used the following procedure to extract features from unlabelled data: first, they applied some basic preprocessing (like normalization) to the unlabelled data. Next they extracted ``patches" from the images and developed vector representations of these patches using unsupervised methods like sparse auto-encoders, RBMs, K-Means, etc. Finally, they extracted the same-sized patches from the labelled images and applied the same unsupervised methods to the patches to get vector representations of the labelled patches. Assuming the unsupervised methods return feature vectors in $\mathbb{R}^k$, the resulting feature vectors were treated as a new image representations with $k$ channels. After performing pooling on the quadrants of each channel, the authors were able to develop a final feature vector of length $4k$. 
-\newline
-\newline
-\textbf{-------------------DISCUSS OUR METHOD HERE-------------------}
 
+\subsection*{FINAL MODEL CONFIGURATION: EXPERIMENTS AND RESULTS}
+- Also need to explain final model architecture and configuration (include stopping criterion, optimizer and batch sizes for all experiments).
+\newline
+\newline
+\textbf{Section 2 Methods for Improving Accuracy:}
+\newline
+\newline
+Our model uses Nesterov's Accelerated Gradient (NAG) method, dropout, Xavier initialization, and data augmentation to improve accuracy. Below we provide a short summary of the results of experiments using these methods. 
+
+\begin{center}
+\begin{tabular}{ |c|c|c| } 
+ \hline
+ Model & Train Accuracy & Validation Accuracy \\ \hline
+ Baseline (with NAG and Dropout) & 97.83 & 95.12 \\ 
+ Baseline + Xavier & 95.78 & 97.90 \\ 
+ Baseline + Xavier + Data Augmentation & 97.01 & 93.29 \\ 
+ \hline
+\end{tabular}
+\end{center}
+
+Below, we show the training and validation curves for a baseline model trained using the NAG method as well as dropout, which were both implemented in the provided starter code. (The NAG method is built into the SGD optimizer in PyTorch, and can be used by modifying the momentum parameter appropriately.)
+
+\begin{figure}
+  \includegraphics[width=12cm]{../plots/accuracies_baseline.jpg}
+  \centering
+  \caption{Baseline.}
+  \label{fig:boat1}
+\end{figure}
+
+Next, we applied Xavier initialization with [INSERT FORMULAS] for fully connected network modules, and [EXPLAIN] for convolutional layers. This is because [INSERT EXPLANATION]. The training and validation curves for our baseline model plus Xavier initialization is shown below.
+
+\begin{figure}
+  \includegraphics[width=12cm]{../plots/accuracies_xavier.jpg}
+  \centering
+  \caption{Baseline + Xavier Initialization}
+  \label{fig:boat1}
+\end{figure}
+
+Finally, we applied data augmentation to the dataset. [INSERT DESCRIPTION OF DATA AUGMENTATION]. 
+\newline
+\newline
+Surprisingly, we noticed that the model accuracy on the augmented training set was significantly lower than the model accuracy on the validation set. For this reason, we also evaluated the model accuracy on the original, un-augmented training set (shown in blue in the graph below), which behaves as expected in comparison to the model accuracy on the validation set. We surmised that model performance on the augmented dataset was poor compared to performance on the original training and validation sets because the classification task on the augmented dataset was significantly harder. In the augmented dataset, there is most likely a higher proportion of images which are difficult to classify - those that are rotated, zoomed, or otherwise distorted in a manner that might be uncommon in natural human writing - therefore which are infrequent in the un-augmented training and validation sets. 
+
+\begin{figure}
+  \includegraphics[width=12cm]{../plots/accuracies_augmented.jpg}
+  \centering
+  \caption{Baseline + Xavier Initialization + Data Augmentation}
+  \label{fig:boat1}
+\end{figure}
+
+\textbf{Unsupervised Methods for Improving Accuracy:}
+\newline
+\newline
+[INSERT EXPLANATION OF PSEUDO-LABELS HERE]
+[INSERT PLOT AND INCLUDE ACCURACY RESULTS]
 }
 \end{enumerate}
 \end{document}

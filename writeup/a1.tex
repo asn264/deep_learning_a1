@@ -1,6 +1,7 @@
 \documentclass[a4paper]{article}
 
 \usepackage{fullpage, amsmath, amssymb, verbatim} % Package to use full page
+\usepackage{graphicx}
 
 \title{Deep Learning: Assignment One}
 \author{Aditi Nair (asn264) and Akash Shah (ass502)}
@@ -139,10 +140,82 @@ However, since the authors of the Xavier method derived the parameters for the d
 \newline
 \newline 
 Coate et al. used the following procedure to extract features from unlabelled data: first, they applied some basic preprocessing (like normalization) to the unlabelled data. Next they extracted ``patches" from the images and developed vector representations of these patches using unsupervised methods like sparse auto-encoders, RBMs, K-Means, etc. Finally, they extracted the same-sized patches from the labelled images and applied the same unsupervised methods to the patches to get vector representations of the labelled patches. Assuming the unsupervised methods return feature vectors in $\mathbb{R}^k$, the resulting feature vectors were treated as a new image representations with $k$ channels. After performing pooling on the quadrants of each channel, the authors were able to develop a final feature vector of length $4k$. 
-\newline
-\newline
-\textbf{-------------------DISCUSS OUR METHOD HERE-------------------}
 
+\subsection*{FINAL MODEL CONFIGURATION: EXPERIMENTS AND RESULTS}
+- Also need to explain final model architecture and configuration (include stopping criterion, optimizer and batch sizes for all experiments).
+\newline
+\newline
+\textbf{Section 2 Methods for Improving Accuracy:}
+\newline
+\newline
+Our model uses Nesterov's Accelerated Gradient (NAG) method, dropout, Xavier initialization, and data augmentation to improve accuracy. Below we provide a short summary of the results of experiments using these methods. 
+
+\begin{center}
+\begin{tabular}{ |c|c|c| } 
+ \hline
+ Model & Train Accuracy & Validation Accuracy \\ \hline
+ Baseline (with NAG and Dropout) & 97.83 & 95.12 \\ 
+ Baseline + Xavier & 95.78 & 97.90 \\ 
+ Baseline + Xavier + Data Augmentation & 98.90 & 97.08 \\ 
+ \hline
+\end{tabular}
+\end{center}
+
+Below, we show the training and validation curves for a baseline model trained using the NAG method as well as dropout, which were both implemented in the provided starter code. (The NAG method is built into the SGD optimizer in PyTorch, and can be used by modifying the momentum parameter appropriately.)
+
+\begin{figure}
+  \includegraphics[width=12cm]{../plots/accuracies_baseline.jpg}
+  \centering
+  \caption{Baseline.}
+  \label{fig:boat1}
+\end{figure}
+
+Next, we applied Xavier initialization with [INSERT FORMULAS] for fully connected network modules, and [EXPLAIN] for convolutional layers. This is because [INSERT EXPLANATION]. The training and validation curves for our baseline model plus Xavier initialization is shown below.
+
+\begin{figure}
+  \includegraphics[width=12cm]{../plots/accuracies_xavier.jpg}
+  \centering
+  \caption{Baseline + Xavier Initialization}
+  \label{fig:boat1}
+\end{figure}
+
+Finally, we applied data augmentation to the dataset. [INSERT DESCRIPTION OF DATA AUGMENTATION]. 
+\newline
+\newline
+Surprisingly, we noticed that the model accuracy on the augmented training set was significantly lower than the model accuracy on the validation set. For this reason, we also evaluated the model accuracy on the original, un-augmented training set (shown in blue in the graph below), which behaves as expected in comparison to the model accuracy on the validation set. We surmised that model performance on the augmented dataset was poor compared to performance on the original training and validation sets because the classification task on the augmented dataset was significantly harder. In the augmented dataset, there is most likely a higher proportion of images which are difficult to classify - those that are rotated, zoomed, or otherwise distorted in a manner that might be uncommon in natural human writing - and which are accordingly infrequent in the un-augmented training and validation sets. 
+
+\begin{figure}
+  \includegraphics[width=12cm]{../plots/accuracies_augmented.jpg}
+  \centering
+  \caption{Baseline + Xavier Initialization + Data Augmentation}
+  \label{fig:boat1}
+\end{figure}
+
+\textbf{Unsupervised Methods for Improving Accuracy:}
+\newline
+\newline
+In order to incorporate unlabelled MNIST data into our models, we relied on the pseudo-label method described by Dong-Hung Lee in ``Pseudo-Label : The Simple and Efficient Semi-Supervised Learning Method for Deep Neural Networks". In the pseudo-label method, supervised learning models are trained using labelled and unlabelled data simultaneously. The unlabelled data is given a provisory label based on the model's latest prediction for that data. The weight of the unlabelled data in the objective function is annealed over time such that more powerful versions of the model attribute greater weight to unlabelled data and provisory labels. 
+\newline
+\newline
+Therefore we trained our model on the following objective function:
+$$L = \frac{1}{N} \sum_{m=1}^{N} NLL(y_m, \hat{y_m}) + \alpha(t) \frac{1}{N'} \sum_{m=1}^{N'} NLL(y_m, \hat{y_m}) $$
+Above, the first summand computes the average negative log likelihood over all labelled samples. The second summand computes the average negative log likelihood over all unlabelled samples and their pseudo-labels. $\alpha(t)$ is an annealing function which is computed as:
+\begin{equation}\alpha(t) = 
+\left\{
+	\begin{array}{ll}
+		0 & \mbox{if } t <T_1\\
+		\frac{t-T_1}{T_2-T_1} \alpha_f & \mbox{if } T_1 \leq t < T_2 \\
+		\alpha_f & \mbox{if } T_2 \leq t
+	\end{array}
+\right.\end{equation}
+Above, $t$ refers to current training epoch. $T_1$ and $T_2$ are thresholds which determine the inclusion and weighting of the pseudo-labels over time. Before $T_1$, pseudo-labels are effectively ignored - so higher values of $T_1$ will ideally force the model to refrain from using pseudo-labels until the model is at least somewhat adept at guessing most labels. Once $t \geq T_2$, depending on the choice of the weighting constant $\alpha_f$, the unlabelled data can be weighted significantly more heavily than the original labelled data. Between $T_1$ and $T_2$ the weight of unlabelled data is increased as $t$ increases. 
+\newline
+\newline
+In our experiments we set $T_1 = ??$, $T_2 = ??$ and $\alpha_f = ??$. The original author updated the pseudo-labels after every optimization step in a gradient step procedure. However, we surmised that since our batch sizes are relatively small, and the loss surface was non-convex, individual gradient steps were likely to be noisy. Therefore, we waited a full epoch before updating the pseudo-labels - hopefully averaging away the noise in individual gradient steps. 
+\newline
+\newline
+
+[INSERT PLOT, ACCURACY RESULTS, AND PARAMETER DETAILS]
 }
 \end{enumerate}
 \end{document}

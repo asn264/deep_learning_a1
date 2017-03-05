@@ -286,21 +286,26 @@ def test(epoch, loader, test_type):
 
 train_accs=[]
 dev_accs=[]
-#orig_accs=[]
+orig_accs=[]
 for epoch in range(1, args.epochs + 1):
     
     train(epoch)
-    c_train_acc = test(epoch, train_loader, 'Train')
+    c_train_acc = test(epoch, train_loader, 'Augmented Train')
     c_dev_acc = test(epoch, valid_loader, 'Dev')
-    c_orig_acc = test(epoch, orig_loader, 'Orig')
+    c_orig_acc = test(epoch, orig_loader, 'Orig Train')
 
     dev_accs.append(c_dev_acc) #updates loss for plot 
     train_accs.append(c_train_acc) 
-    #orig_accs.append(c_orig_acc)
+    orig_accs.append(c_orig_acc)
 
-#plt.plot(np.arange(args.epochs), orig_accs, marker='o', label='Orig Accuracy')
-"""plt.plot(np.arange(args.epochs), dev_accs, marker='o', label='Validation Accuracy')
-plt.plot(np.arange(args.epochs), train_accs, marker='o', label='Train Accuracy')
+print (train_accs)
+print (dev_accs)
+print (orig_accs)
+
+plt.plot(np.arange(args.epochs), orig_accs, marker='o', label='Train Accuracy')
+plt.plot(np.arange(args.epochs), dev_accs, marker='o', label='Validation Accuracy')
+plt.plot(np.arange(args.epochs), train_accs, marker='o', label='Augmented Accuracy')
+plt.xlabel('Epochs')
 plt.title('MNIST: Train and Validation Accuracies')
-plt.legend(loc='upper left')
-plt.savefig('accuracies_with_distortion.jpg')"""
+plt.legend(loc='bottom right')
+plt.savefig('plots/accuracies.jpg')

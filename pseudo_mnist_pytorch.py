@@ -13,6 +13,8 @@ from torch.autograd import Variable
 
 import scipy.misc
 import scipy.ndimage
+from scipy.ndimage.interpolation import map_coordinates
+from scipy.ndimage.filters import gaussian_filter
 import sys
 
 import matplotlib.pyplot as plt

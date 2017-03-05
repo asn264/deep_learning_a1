@@ -160,6 +160,7 @@ for i in trainset_labeled:
 
 
     #apply elastic distortion to image
+    #paramter values based off of https://arxiv.org/pdf/1103.4487.pdf
     sigma = np.random.uniform(5,6)
     alpha = np.random.uniform(36,38)
     augmented_dataset.append((torch.from_numpy(np.array([elastic_transform(i[0].numpy()[0],alpha,sigma)])),i[1]))

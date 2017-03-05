@@ -13,6 +13,8 @@ from torch.autograd import Variable
 
 import scipy.misc
 import scipy.ndimage
+from scipy.ndimage.interpolation import map_coordinates
+from scipy.ndimage.filters import gaussian_filter
 import sys
 
 import matplotlib.pyplot as plt
@@ -37,7 +39,8 @@ parser.add_argument('--seed', type=int, default=1, metavar='S',
 parser.add_argument('--log-interval', type=int, default=10, metavar='N',
                     help='how many batches to wait before logging training status')
 args = parser.parse_args()
-args.cuda = not args.no_cuda and torch.cuda.is_available()
+#args.cuda = not args.no_cuda and torch.cuda.is_available()
+args.cuda = False
 
 torch.manual_seed(args.seed)
 if args.cuda:
@@ -102,8 +105,32 @@ def clipped_zoom(img, zoom_factor, **kwargs):
     return out
 
 
+#source of following function: https://gist.github.com/chsasank/4d8f68caf01f041a6453e67fb30f8f5a
+def elastic_transform(image, alpha, sigma, random_state=None):
+    """Elastic deformation of images as described in [Simard2003]_.
+    .. [Simard2003] Simard, Steinkraus and Platt, "Best Practices for
+       Convolutional Neural Networks applied to Visual Document Analysis", in
+       Proc. of the International Conference on Document Analysis and
+       Recognition, 2003.
+    """
+    assert len(image.shape)==2
+
+    if random_state is None:
+        random_state = np.random.RandomState(None)
+
+    shape = image.shape
+
+    dx = gaussian_filter((random_state.rand(*shape) * 2 - 1), sigma, mode="constant", cval=0) * alpha
+    dy = gaussian_filter((random_state.rand(*shape) * 2 - 1), sigma, mode="constant", cval=0) * alpha
+
+    x, y = np.meshgrid(np.arange(shape[0]), np.arange(shape[1]), indexing='ij')
+    indices = np.reshape(x+dx, (-1, 1)), np.reshape(y+dy, (-1, 1))
+    
+    return map_coordinates(image, indices, order=1).reshape(shape)
+
+
 #Data augmentation
-augmented_dataset = []
+"""augmented_dataset = []
 for i in trainset_labeled:
     #add original image
     augmented_dataset.append(i)
@@ -132,13 +159,21 @@ for i in trainset_labeled:
     augmented_dataset.append((torch.from_numpy(np.array([clipped_zoom(i[0].numpy()[0],zoom_amount)])),i[1]))
 
 
-train_loader = torch.utils.data.DataLoader(augmented_dataset, batch_size=64, shuffle=True, **kwargs)
+    #apply elastic distortion to image
+    #paramter values based off of https://arxiv.org/pdf/1103.4487.pdf
+    sigma = np.random.uniform(5,6)
+    alpha = np.random.uniform(36,38)
+    augmented_dataset.append((torch.from_numpy(np.array([elastic_transform(i[0].numpy()[0],alpha,sigma)])),i[1]))
+"""
+
+#train_loader = torch.utils.data.DataLoader(augmented_dataset, batch_size=64, shuffle=True, **kwargs)
+train_loader = torch.utils.data.DataLoader(trainset_labeled, batch_size=64, shuffle=True, **kwargs)
 valid_loader = torch.utils.data.DataLoader(validset, batch_size=64, shuffle=True)
 test_loader = torch.utils.data.DataLoader(testset, batch_size=len(testset), shuffle=True)
 unlab_loader = torch.utils.data.DataLoader(trainset_unlabeled, batch_size=256, shuffle=True)
 
 #currently the labels for the unlab data are set to None, so it loader wont work
-unlab_loader.dataset.train_labels=torch.LongTensor([-1]*len(unlab_loader.dataset)) #initialize these to dummy value
+unlab_loader.dataset.train_labels=torch.LongTensor([0]*len(unlab_loader.dataset)) #initialize these to dummy value
 
 
 # test_loader = torch.utils.data.DataLoader(
@@ -202,7 +237,7 @@ def train(epoch, T1, T2, alpha_f):
         output = model(data)
         output_unlab = model(unlab_data)
 
-        loss = (F.nll_loss(output, target) + pseudo_weight(epoch, T1=T1, T2=T2, alpha_f=alpha_f)*F.nll_loss(output_unlab,unlab_target)) #apply weighted pseudo
+	loss = (F.nll_loss(output, target) + pseudo_weight(epoch, T1=T1, T2=T2, alpha_f=alpha_f)*F.nll_loss(output_unlab,unlab_target)) #apply weighted pseudo
         
         loss.backward()
         optimizer.step()
@@ -271,8 +306,8 @@ def update_unlabeled():
 
 train_accs=[]
 dev_accs=[]
-T1 = 1
-T2 = 6
+T1 = 100
+T2 = 600
 alpha_f = 3
 for epoch in range(1, args.epochs + 1):
 
@@ -289,9 +324,10 @@ for epoch in range(1, args.epochs + 1):
     dev_accs.append(c_dev_acc) #updates loss for plot 
     train_accs.append(c_train_acc) 
 
-
+"""
 plt.plot(np.arange(args.epochs), dev_accs, marker='o', label='Validation Accuracy')
 plt.plot(np.arange(args.epochs), train_accs, marker='o', label='Train Accuracy')
 plt.title('MNIST: Train and Validation Losses')
 plt.legend(loc='upper left')
 plt.savefig('losses.jpg')
+"""

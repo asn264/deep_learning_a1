@@ -160,7 +160,7 @@ for i in trainset_labeled:
 
 
     #apply elastic distortion to image
-    #paramter values based off of https://arxiv.org/pdf/1103.4487.pdf
+    #parameter values based off of https://arxiv.org/pdf/1103.4487.pdf
     sigma = np.random.uniform(5,6)
     alpha = np.random.uniform(36,38)
     augmented_dataset.append((torch.from_numpy(np.array([elastic_transform(i[0].numpy()[0],alpha,sigma)])),i[1]))
@@ -307,5 +307,5 @@ plt.plot(np.arange(args.epochs), dev_accs, marker='o', label='Validation Accurac
 plt.plot(np.arange(args.epochs), train_accs, marker='o', label='Augmented Accuracy')
 plt.xlabel('Epochs')
 plt.title('MNIST: Train and Validation Accuracies')
-plt.legend(loc='bottom right')
+plt.legend(loc='lower right')
 plt.savefig('plots/accuracies.jpg')

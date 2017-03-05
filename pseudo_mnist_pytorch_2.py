@@ -325,5 +325,5 @@ plt.plot(np.arange(args.epochs), dev_accs, marker='o', label='Validation Accurac
 plt.plot(np.arange(args.epochs), train_accs, marker='o', label='Augmented Accuracy')
 plt.xlabel('Epochs')
 plt.title('MNIST: Train and Validation Accuracies')
-plt.legend(loc='bottom right')
+plt.legend(loc='lower right')
 plt.savefig('plots/accuracies.jpg')

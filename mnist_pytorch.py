@@ -245,7 +245,8 @@ model = Net()
 if args.cuda:
     model.cuda()
 
-optimizer = optim.SGD(model.parameters(), lr=args.lr, momentum=args.momentum)
+#optimizer = optim.SGD(model.parameters(), lr=args.lr, momentum=args.momentum)
+optimizer = optim.Adam(model.parameters(),lr=.001)
 
 def train(epoch):
     model.train()
@@ -302,10 +303,10 @@ print (train_accs)
 print (dev_accs)
 print (orig_accs)
 
-plt.plot(np.arange(args.epochs), orig_accs, marker='o', label='Train Accuracy')
+"""plt.plot(np.arange(args.epochs), orig_accs, marker='o', label='Train Accuracy')
 plt.plot(np.arange(args.epochs), dev_accs, marker='o', label='Validation Accuracy')
 plt.plot(np.arange(args.epochs), train_accs, marker='o', label='Augmented Accuracy')
 plt.xlabel('Epochs')
 plt.title('MNIST: Train and Validation Accuracies')
 plt.legend(loc='lower right')
-plt.savefig('plots/accuracies.jpg')
+plt.savefig('plots/accuracies.jpg')"""

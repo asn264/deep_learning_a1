@@ -148,7 +148,7 @@ Coate et al. used the following procedure to extract features from unlabelled da
 \textbf{Section 2 Methods for Improving Accuracy:}
 \newline
 \newline
-Our model uses Nesterov's Accelerated Gradient (NAG) method, dropout, Xavier and He initialization methods, and data augmentation to improve accuracy. Below we provide a short summary of the results of experiments using these methods. 
+Our model uses Nesterov's Accelerated Gradient (NAG) method, dropout, Xavier and He initialization methods, and data augmentation to improve accuracy. Below we provide a short summary of the results of experiments using these methods, running each one for 50 epochs. 
 
 \begin{center}
 \begin{tabular}{ |c|c|c| } 
@@ -212,9 +212,10 @@ Above, the first summand computes the average negative log likelihood over all l
 Above, $t$ refers to current training epoch. $T_1$ and $T_2$ are thresholds which determine the inclusion and weighting of the pseudo-labels over time. Before $T_1$, pseudo-labels are effectively ignored - so higher values of $T_1$ will ideally force the model to refrain from using pseudo-labels until the model is at least somewhat adept at guessing most labels. Once $t \geq T_2$, depending on the choice of the weighting constant $\alpha_f$, the unlabelled data can be weighted significantly more heavily than the original labelled data. Between $T_1$ and $T_2$ the weight of unlabelled data is increased as $t$ increases. 
 \newline
 \newline
-In our experiments we set $T_1 = ??$, $T_2 = ??$ and $\alpha_f = ??$. The original author updated the pseudo-labels after every optimization step in a gradient step procedure. However, we surmised that since our batch sizes are relatively small, and the loss surface was non-convex, individual gradient steps were likely to be noisy. Therefore, we waited a full epoch before updating the pseudo-labels - hopefully averaging away the noise in individual gradient steps. 
+In our experiments we set $T_1 = 75$, $T_2 = 125$ and $\alpha_f = 1$. The original author updated the pseudo-labels after every optimization step in a gradient step procedure. However, we surmised that since our batch sizes are relatively small, and the loss surface was non-convex, individual gradient steps were likely to be noisy. Therefore, we waited a full epoch before updating the pseudo-labels - hopefully averaging away the noise in individual gradient steps. 
 \newline
 \newline
+Finally, we experimented with tweaks in the architecture and optimization methods to see if we could get any final small improvements in our pseudo-labels model. We experimented with the momentum in the SGD optimizer, batch normalization, increasing the number of fully connected layers, and with using the Adam optimizer instead of SGD optimizer. Our experiments showed that using batch normalization on the 2nd convolutional layer and using the Adam optimizer yielded small improvements in performance. 
 
 [INSERT PLOT, ACCURACY RESULTS, AND PARAMETER DETAILS]
 }

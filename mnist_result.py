@@ -36,4 +36,4 @@ predict_label.reset_index(inplace=True)
 predict_label.rename(columns={'index': 'ID'}, inplace=True)
 
 #save predictions
-predict_label.to_csv('final_submission.csv', index=False)
+predict_label.to_csv('predictions.csv', index=False)

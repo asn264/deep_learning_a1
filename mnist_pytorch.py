@@ -25,7 +25,7 @@ parser.add_argument('--batch-size', type=int, default=64, metavar='N',
                     help='input batch size for training (default: 64)')
 parser.add_argument('--test-batch-size', type=int, default=1000, metavar='N',
                     help='input batch size for testing (default: 1000)')
-parser.add_argument('--epochs', type=int, default=10, metavar='N',
+parser.add_argument('--epochs', type=int, default=50, metavar='N',
                     help='number of epochs to train (default: 10)')
 parser.add_argument('--lr', type=float, default=0.01, metavar='LR',
                     help='learning rate (default: 0.01)')
@@ -308,4 +308,4 @@ plt.plot(np.arange(args.epochs), train_accs, marker='o', label='Augmented Accura
 plt.xlabel('Epochs')
 plt.title('MNIST: Train and Validation Accuracies')
 plt.legend(loc='lower right')
-plt.savefig('plots/accuracies.jpg')
+plt.savefig('plots/accuracies_augmented.jpg')

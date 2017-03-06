@@ -1,5 +1,5 @@
 \documentclass[a4paper]{article}
-
+\usepackage{float}
 \usepackage{fullpage, amsmath, amssymb, verbatim} % Package to use full page
 \usepackage{graphicx}
 
@@ -148,46 +148,47 @@ Coate et al. used the following procedure to extract features from unlabelled da
 \textbf{Section 2 Methods for Improving Accuracy:}
 \newline
 \newline
-Our model uses Nesterov's Accelerated Gradient (NAG) method, dropout, Xavier initialization, and data augmentation to improve accuracy. Below we provide a short summary of the results of experiments using these methods. 
+Our model uses Nesterov's Accelerated Gradient (NAG) method, dropout, Xavier and He initialization methods, and data augmentation to improve accuracy. Below we provide a short summary of the results of experiments using these methods. 
 
 \begin{center}
 \begin{tabular}{ |c|c|c| } 
  \hline
  Model & Train Accuracy & Validation Accuracy \\ \hline
  Baseline (with NAG and Dropout) & 97.83 & 95.12 \\ 
- Baseline + Xavier & 97.90 & 95.78 \\ 
- Baseline + Xavier + Data Augmentation & 98.90 & 97.08 \\ 
+ Baseline + Xavier \& He & 97.90 & 95.78 \\ 
+ Baseline + Xavier \& He + Data Augmentation & 98.73 & 97.42 \\ 
  \hline
 \end{tabular}
 \end{center}
 
 Below, we show the training and validation curves for a baseline model trained using the NAG method as well as dropout, which were both implemented in the provided starter code. (The NAG method is built into the SGD optimizer in PyTorch, and can be used by modifying the momentum parameter appropriately.)
 
-\begin{figure}
+\begin{figure}[H]
   \includegraphics[width=12cm]{../plots/accuracies_baseline.jpg}
   \centering
   \caption{Baseline.}
   \label{fig:boat1}
 \end{figure}
 
-Next, we applied initialization from the Xavier/He papers with $\sigma^2 = \frac{1}{n_i + n_o}$ for fully connected network modules, and $\sigma^2 = \frac{1}{n_i}$ for convolutional layers. As the number of input and output neurons for fully connected layers are readily accessible, we went with the Xavier initialization for them while using He initialization for the convolutional layers. The training and validation curves for our baseline model plus Xavier initialization is shown below.
+Next, we applied initialization from the Xavier and He papers with $\mu=0$ and $\sigma^2 = \frac{1}{n_i + n_o}$ for fully connected network modules. For convolutional layers we set $\mu=0$ and $\sigma^2 = \frac{1}{n_i}$. 
+We applied Xavier initialization for fully connected layers since the number of input and output neurons for fully connected layers are readily accessible, and He initialization for convolutional layers. The training and validation curves for our baseline model with Xavier and He initialization are shown below. The inclusion of these initialization methods improved our validation accuracy from 95.12 to 95.78.
 
-\begin{figure}
+\begin{figure}[H]
   \includegraphics[width=12cm]{../plots/accuracies_xavier.jpg}
   \centering
-  \caption{Baseline + Xavier Initialization}
+  \caption{Baseline + Xavier \& He Initialization}
   \label{fig:boat1}
 \end{figure}
 
-Finally, we applied data augmentation to the dataset. Our data augmentation process was done offline, so the train set was enchanced before we started training. We first added a rotated version of the image, where the rotation parameter was between -45 and 45 degrees. Then, we added a translated version of the image, where both the x and y coordinates were translated by a random number of pixels between -2 and 2. Next, we added a zoomed in/out version of the image by randomly picking to zoom in or zoom out, and then choosing a scaling coefficient between 1 and 2. The last data augmentation method we used was elastic distortion. The parameters were randomly chosen in the following ranges $\sigma \in (5,6)$ and $\alpha \in (36,38)$ as suggested by Ciresan et al. in ``Handwritten Digit Recognition with a Committee of Deep Neural Nets on GPUs".
+Finally, we applied data augmentation to the dataset. Our data augmentation process was done offline, so the train set was enhanced before we started training. We first added a rotated version of the image, where the rotation parameter was randomly chosen between -45 and 45 degrees. Then, we added a translated version of the image, where both the $x$ and $y$ coordinates were translated by a random number of pixels between -2 and 2. Next, we added a zoomed in/out version of the image by randomly picking to zoom in or zoom out, and then choosing a scaling coefficient between 1 and 2. The last data augmentation method we used was elastic distortion. The parameters were randomly chosen in the following ranges $\sigma \in [5,6)$ and $\alpha \in [36,38)$ as suggested by Ciresan et al. in ``Handwritten Digit Recognition with a Committee of Deep Neural Nets on GPUs".
 \newline
 \newline
-Surprisingly, we noticed that the model accuracy on the augmented training set was significantly lower than the model accuracy on the validation set. For this reason, we also evaluated the model accuracy on the original, un-augmented training set (shown in blue in the graph below), which behaves as expected in comparison to the model accuracy on the validation set. We surmised that model performance on the augmented dataset was poor compared to performance on the original training and validation sets because the classification task on the augmented dataset was significantly harder. In the augmented dataset, there is most likely a higher proportion of images which are difficult to classify - those that are rotated, zoomed, or otherwise distorted in a manner that might be uncommon in natural human writing - and which are accordingly infrequent in the un-augmented training and validation sets. 
+Surprisingly, we noticed that the model accuracy on the augmented training set was significantly lower than the model accuracy on the validation set. For this reason, we also evaluated the model accuracy on the original, un-augmented training set (shown in blue in the graph below), which behaves as expected in comparison to the model accuracy on the validation set. We surmised that model performance on the augmented dataset was poor compared to performance on the original training and validation sets because the classification task on the augmented dataset was significantly harder. In the augmented dataset, there is most likely a higher proportion of images which are difficult to classify - those that are rotated, zoomed, or otherwise distorted in a manner that might be uncommon in natural human writing - and which are accordingly infrequent in the un-augmented training and validation sets.  The inclusion of augmented data improved our validation accuracy from 95.78 to 97.42.
 
-\begin{figure}
+\begin{figure}[H]
   \includegraphics[width=12cm]{../plots/accuracies_augmented.jpg}
   \centering
-  \caption{Baseline + Xavier Initialization + Data Augmentation}
+  \caption{Baseline + Xavier \& He Initialization + Data Augmentation}
   \label{fig:boat1}
 \end{figure}
 

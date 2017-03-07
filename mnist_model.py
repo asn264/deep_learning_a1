@@ -231,7 +231,7 @@ def test(model,args,epoch, valid_loader, test_type):
     print('\n' + test_type + ' set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.format(
         test_loss, correct, len(valid_loader.dataset),
         100. * correct / len(valid_loader.dataset)))
-    return test_loss
+    return 100. * correct / len(valid_loader.dataset)
 
 
 def pseudo_weight(t,T1=100,T2=600,alpha_f=3):
@@ -338,7 +338,7 @@ def main():
         orig_accs.append(c_orig_acc) 
 
     #save accuracy plots in jpg file
-    save_accuracy_plot(orig_accs,dev_accs,train_accs,args.epochs)
+    #save_accuracy_plot(orig_accs,dev_accs,train_accs,args.epochs)
 
     #save final model
     torch.save(model.state_dict(), "best_model.mdl")

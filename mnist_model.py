@@ -203,8 +203,8 @@ def train(model,args,train_loader,unlab_loader,optimizer,epoch, T1, T2, alpha_f)
         output = model(data)
         output_unlab = model(unlab_data)
 
-	loss = (F.nll_loss(output, target) + pseudo_weight(epoch, T1=T1, T2=T2, alpha_f=alpha_f)*F.nll_loss(output_unlab,unlab_target)) #apply weighted pseudo
-        
+        loss = (F.nll_loss(output, target) + pseudo_weight(epoch, T1=T1, T2=T2, alpha_f=alpha_f)*F.nll_loss(output_unlab,unlab_target)) 
+
         loss.backward()
         optimizer.step()
         
@@ -252,6 +252,11 @@ def pseudo_weight(t,T1=100,T2=600,alpha_f=3):
 
 def update_unlabeled(model,args,unlab_loader):
     
+
+    '''
+    Update the pseudo-labels for the unlabelled data.
+    '''
+    
     model.eval() #set model in eval mode  
 
     for idx, (data, target) in enumerate(unlab_loader):
@@ -259,7 +264,7 @@ def update_unlabeled(model,args,unlab_loader):
             data, target = data.cuda(), target.cuda()
         data = Variable(data, volatile=True)
         output = model(data)
-        pred = output.data.max(1)[1]
+        pred = output.data.max(1)[1] #give each image the argmax as the label
 
         if len(pred)==unlab_loader.batch_size:
             unlab_loader.dataset.train_labels[idx*unlab_loader.batch_size:(idx+1)*unlab_loader.batch_size] = pred
@@ -295,6 +300,7 @@ def main():
     testset = pickle.load(open("test.p","rb"))
     trainset_unlabeled = pickle.load(open("train_unlabeled.p", "rb"))
 
+    #augment the dataset with rotations, zooms, etc.
     augmented_dataset = data_augmentation(trainset_labeled)
 
     orig_loader = torch.utils.data.DataLoader(trainset_labeled, batch_size=64, shuffle=True, **kwargs)
@@ -303,9 +309,8 @@ def main():
     test_loader = torch.utils.data.DataLoader(testset, batch_size=len(testset), shuffle=False)
     unlab_loader = torch.utils.data.DataLoader(trainset_unlabeled, batch_size=256, shuffle=False)
 
-    #currently the labels for the unlab data are set to None, so it loader wont work
-    unlab_loader.dataset.train_labels=torch.LongTensor([0]*len(unlab_loader.dataset)) #initialize these to dummy value
-
+    #Initialize the values to a dummy label - will be changed before pseudolabels are used in training
+    unlab_loader.dataset.train_labels=torch.LongTensor([0]*len(unlab_loader.dataset)) 
 
     model = Net()
     if args.cuda:
@@ -314,18 +319,22 @@ def main():
     #using Adam optimizer instead of SGD due to slight increase in performance
     optimizer = optim.Adam(model.parameters(), lr=0.001)
 
-    train_accs=[]
+    #Record the accuracy at each epoch
+    train_accs=[] #this is augmented train
     dev_accs=[]
-    orig_accs=[]
+    orig_accs=[] #this is the original train
+    
+    #T1, T2, alpha_f are parameters for pseudo-label method
     T1 = 75
     T2 = 125
     alpha_f = 1
+    
     for epoch in range(1, args.epochs + 1):
 
         '''
         we implement pseudo-labels to update every epoch, starting at epoch = T1 
         '''
-        if epoch >= T1: #update pseudolabels for unlabeled data
+        if epoch >= T1: #update pseudolabels for unlabeled data 
             update_unlabeled(model, args, unlab_loader)
         
         train(model, args, train_loader, unlab_loader, optimizer, epoch, T1, T2, alpha_f)
@@ -333,7 +342,7 @@ def main():
         c_dev_acc = test(model, args, epoch, valid_loader, 'Dev')
         c_orig_acc = test(model, args, epoch, orig_loader, 'Orig Train')
 
-        dev_accs.append(c_dev_acc) #updates loss for plot 
+        dev_accs.append(c_dev_acc) #updates accuracy for plot 
         train_accs.append(c_train_acc)
         orig_accs.append(c_orig_acc) 
 

@@ -2,6 +2,7 @@
 \usepackage{float}
 \usepackage{fullpage, amsmath, amssymb, verbatim} % Package to use full page
 \usepackage{graphicx}
+\usepackage{adjustbox}
 
 \title{Deep Learning: Assignment One}
 \author{Aditi Nair (asn264) and Akash Shah (ass502)}
@@ -143,7 +144,7 @@ Coate et al. used the following procedure to extract features from unlabelled da
 
 \subsection*{FINAL MODEL CONFIGURATION: EXPERIMENTS AND RESULTS}
 
-For our initial experimentation, we started with the architecture given in the starter code, which consisted of two convolutional layers with max-pooling and ReLU, dropout with $p=0.5$, and two fully connected layers. We also started with the SGD optimizer with a momentum of 0.5 as in the starter coder, and used a batch size of 64 in training. Initially, we ran models for 50 epochs as that was enough to tell if some change made an improvement. We did not observe overfitting in our model as we increased the number of epochs. 
+For our initial experiments, we used the architecture given in the starter code, which consisted of two convolutional layers with max-pooling and ReLU, dropout with $p=0.5$, and two fully connected layers. We used the SGD optimizer with a momentum of 0.5 as in the starter code, and used a batch size of 64 in training. Initially, we ran models for 50 epochs as that was enough to tell if some change made an improvement. We did not observe overfitting in our model as we increased the number of epochs up to 150. 
 \newline
 \newline
 \textbf{Section 2 Methods for Improving Accuracy:}
@@ -221,18 +222,17 @@ In our experiments we set $T_1 = 75$, $T_2 = 125$ and $\alpha_f = 1$. The origin
 \newline
 In order to fully utilize the improvements from the unlabeled data, we ran our final model for 150 epochs which allowed for 25 epochs of equally weighted labeled and unlabeled data after $T_2 = 125$. As before, we did not observe overfitting.
 
-[INSERT PLOT, ACCURACY RESULTS, AND PARAMETER DETAILS]
-
 \begin{center}
-\begin{tabular}{ |c|c|c| } 
+\begin{adjustbox}{width=17cm}
+\begin{tabular}{ |c|c|c|cl } 
  \hline
- Model & Val. Acc. 50 epochs & Val. Acc. 100 epochs & Val. Acc. 150 epochs \\ \hline
- Baseline + Xavier \& He + Data Augmentation & 97.42 & 97.47 & - \\ 
- Final model with Pseudo-labels & 97.74 & 97.82 & 98.03
+ Model & Val. Acc. 50 Epochs & Val. Acc. 100 Epochs & Val. Acc. 150 Epochs \\ \hline
+ Baseline + Xavier \& He + Data Augmentation & 97.42 & 97.47 & 97.64 \\ 
+ Final model with Pseudo-labels & 97.74 & 97.82 & 98.03 \\  
  \hline
-\end{tabular}
+\end{tabular} \hfill\
+\end{adjustbox}
 \end{center}
-
 
 \begin{figure}[H]
   \includegraphics[width=12cm]{../plots/final_model_accuracies.jpg}

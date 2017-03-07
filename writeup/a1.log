@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2016.5.22)  5 MAR 2017 23:36
+This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2016.5.22)  7 MAR 2017 17:45
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -142,7 +142,59 @@ Package: ltxcmds 2016/05/16 v1.23 LaTeX kernel commands for general use (HO)
 \Gin@req@height=\dimen112
 \Gin@req@width=\dimen113
 )
-(./a1.aux
+(/usr/local/texlive/2016/texmf-dist/tex/latex/adjustbox/adjustbox.sty
+Package: adjustbox 2012/05/21 v1.0 Adjusting TeX boxes (trim, clip, ...)
+
+(/usr/local/texlive/2016/texmf-dist/tex/latex/xkeyval/xkeyval.sty
+Package: xkeyval 2014/12/03 v2.7a package option processing (HA)
+
+(/usr/local/texlive/2016/texmf-dist/tex/generic/xkeyval/xkeyval.tex
+(/usr/local/texlive/2016/texmf-dist/tex/generic/xkeyval/xkvutils.tex
+\XKV@toks=\toks24
+\XKV@tempa@toks=\toks25
+)
+\XKV@depth=\count101
+File: xkeyval.tex 2014/12/03 v2.7a key=value parser (HA)
+))
+(/usr/local/texlive/2016/texmf-dist/tex/latex/adjustbox/adjcalc.sty
+Package: adjcalc 2012/05/16 v1.1 Provides advanced setlength with multiple back
+-ends (calc, etex, pgfmath)
+)
+(/usr/local/texlive/2016/texmf-dist/tex/latex/adjustbox/trimclip.sty
+Package: trimclip 2012/05/16 v1.0 Trim and clip general TeX material
+
+(/usr/local/texlive/2016/texmf-dist/tex/latex/collectbox/collectbox.sty
+Package: collectbox 2012/05/17 v0.4b Collect macro arguments as boxes
+\collectedbox=\box30
+)
+\tc@llx=\dimen114
+\tc@lly=\dimen115
+\tc@urx=\dimen116
+\tc@ury=\dimen117
+Package trimclip Info: Using driver 'tc-pdftex.def'.
+
+(/usr/local/texlive/2016/texmf-dist/tex/latex/adjustbox/tc-pdftex.def
+File: tc-pdftex.def 2012/05/13 v1.0 Clipping driver for pdftex
+))
+\adjbox@Width=\dimen118
+\adjbox@Height=\dimen119
+\adjbox@Depth=\dimen120
+\adjbox@Totalheight=\dimen121
+
+(/usr/local/texlive/2016/texmf-dist/tex/latex/ifoddpage/ifoddpage.sty
+Package: ifoddpage 2016/04/23 v1.1 Conditionals for odd/even page detection
+\c@checkoddpage=\count102
+)
+(/usr/local/texlive/2016/texmf-dist/tex/latex/varwidth/varwidth.sty
+Package: varwidth 2009/03/30 ver 0.92;  Variable-width minipages
+\@vwid@box=\box31
+\sift@deathcycles=\count103
+\@vwid@loff=\dimen122
+\@vwid@roff=\dimen123
+)) (./a1.aux
+
+LaTeX Warning: Label `fig:boat1' multiply defined.
+
 
 LaTeX Warning: Label `fig:boat1' multiply defined.
 
@@ -152,31 +204,31 @@ LaTeX Warning: Label `fig:boat1' multiply defined.
 )
 \openout1 = `a1.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 9.
-LaTeX Font Info:    ... okay on input line 9.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 9.
-LaTeX Font Info:    ... okay on input line 9.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 9.
-LaTeX Font Info:    ... okay on input line 9.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 9.
-LaTeX Font Info:    ... okay on input line 9.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 9.
-LaTeX Font Info:    ... okay on input line 9.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 9.
-LaTeX Font Info:    ... okay on input line 9.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 10.
+LaTeX Font Info:    ... okay on input line 10.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 10.
+LaTeX Font Info:    ... okay on input line 10.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 10.
+LaTeX Font Info:    ... okay on input line 10.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 10.
+LaTeX Font Info:    ... okay on input line 10.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 10.
+LaTeX Font Info:    ... okay on input line 10.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 10.
+LaTeX Font Info:    ... okay on input line 10.
  (/usr/local/texlive/2016/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count101
-\scratchdimen=\dimen114
-\scratchbox=\box30
-\nofMPsegments=\count102
-\nofMParguments=\count103
-\everyMPshowfont=\toks24
-\MPscratchCnt=\count104
-\MPscratchDim=\dimen115
-\MPnumerator=\count105
-\makeMPintoPDFobject=\count106
-\everyMPtoPDFconversion=\toks25
+\scratchcounter=\count104
+\scratchdimen=\dimen124
+\scratchbox=\box32
+\nofMPsegments=\count105
+\nofMParguments=\count106
+\everyMPshowfont=\toks26
+\MPscratchCnt=\count107
+\MPscratchDim=\dimen125
+\MPnumerator=\count108
+\makeMPintoPDFobject=\count109
+\everyMPtoPDFconversion=\toks27
 ) (/usr/local/texlive/2016/texmf-dist/tex/generic/oberdiek/pdftexcmds.sty
 Package: pdftexcmds 2016/05/10 v0.21 Utility functions of pdfTeX for LuaTeX (HO
 )
@@ -224,151 +276,162 @@ G,.JBIG2,.JB2,.eps]
 File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
 e
 ))
-LaTeX Font Info:    Try loading font information for U+msa on input line 11.
+LaTeX Font Info:    Try loading font information for U+msa on input line 12.
 
 (/usr/local/texlive/2016/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Try loading font information for U+msb on input line 11.
+LaTeX Font Info:    Try loading font information for U+msb on input line 12.
 
 (/usr/local/texlive/2016/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
-Underfull \hbox (badness 10000) in paragraph at lines 15--22
+Underfull \hbox (badness 10000) in paragraph at lines 16--23
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 15--22
+Underfull \hbox (badness 10000) in paragraph at lines 16--23
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 29--35
+Underfull \hbox (badness 10000) in paragraph at lines 30--36
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 42--47
+Underfull \hbox (badness 10000) in paragraph at lines 43--48
 
  []
 
 [1
 
 {/usr/local/texlive/2016/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
-Underfull \hbox (badness 10000) in paragraph at lines 63--67
+Underfull \hbox (badness 10000) in paragraph at lines 64--68
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 90--94
+Underfull \hbox (badness 10000) in paragraph at lines 91--95
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 95--100
+Underfull \hbox (badness 10000) in paragraph at lines 96--101
 
  []
 
 [2]
-LaTeX Font Info:    Try loading font information for OMS+cmr on input line 117.
+LaTeX Font Info:    Try loading font information for OMS+cmr on input line 118.
 
  (/usr/local/texlive/2016/texmf-dist/tex/latex/base/omscmr.fd
 File: omscmr.fd 2014/09/29 v2.5h Standard LaTeX font definitions
 )
 LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <10> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 117.
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 118.
 
-Underfull \hbox (badness 10000) in paragraph at lines 130--137
+Underfull \hbox (badness 10000) in paragraph at lines 131--138
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 130--137
+Underfull \hbox (badness 10000) in paragraph at lines 131--138
 
  []
 
 [3]
-Underfull \hbox (badness 10000) in paragraph at lines 139--143
+Underfull \hbox (badness 10000) in paragraph at lines 140--144
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 145--152
+Underfull \hbox (badness 10000) in paragraph at lines 147--154
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 145--152
+Underfull \hbox (badness 10000) in paragraph at lines 147--154
 
  []
 
-<../plots/accuracies_baseline.jpg, id=25, 803.0pt x 602.25pt>
+[4] <../plots/accuracies_baseline.jpg, id=28, 803.0pt x 602.25pt>
 File: ../plots/accuracies_baseline.jpg Graphic file (type jpg)
 
 <use ../plots/accuracies_baseline.jpg>
 Package pdftex.def Info: ../plots/accuracies_baseline.jpg used on input line 16
-7.
+9.
 (pdftex.def)             Requested size: 341.43306pt x 256.07692pt.
- [4]
+
 <../plots/accuracies_xavier.jpg, id=29, 803.0pt x 602.25pt>
 File: ../plots/accuracies_xavier.jpg Graphic file (type jpg)
 
 <use ../plots/accuracies_xavier.jpg>
-Package pdftex.def Info: ../plots/accuracies_xavier.jpg used on input line 177.
+Package pdftex.def Info: ../plots/accuracies_xavier.jpg used on input line 179.
 
 (pdftex.def)             Requested size: 341.43306pt x 256.07692pt.
-
-Underfull \hbox (badness 10000) in paragraph at lines 183--187
+ [5 <../plots/accuracies_baseline.jpg>]
+Underfull \hbox (badness 10000) in paragraph at lines 185--189
 
  []
 
-[5 <../plots/accuracies_baseline.jpg> <../plots/accuracies_xavier.jpg>]
 <../plots/accuracies_augmented.jpg, id=33, 803.0pt x 602.25pt>
 File: ../plots/accuracies_augmented.jpg Graphic file (type jpg)
 
 <use ../plots/accuracies_augmented.jpg>
 Package pdftex.def Info: ../plots/accuracies_augmented.jpg used on input line 1
-89.
+91.
 (pdftex.def)             Requested size: 341.43306pt x 256.07692pt.
-
-Underfull \hbox (badness 10000) in paragraph at lines 195--202
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 195--202
-
- []
-
-[6 <../plots/accuracies_augmented.jpg>]
-Underfull \hbox (badness 10000) in paragraph at lines 211--218
+ [6 <../plots/accuracies_xavier.jpg>]
+Underfull \hbox (badness 10000) in paragraph at lines 197--207
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 211--218
+Underfull \hbox (badness 10000) in paragraph at lines 197--207
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 211--218
+Underfull \hbox (badness 10000) in paragraph at lines 197--207
 
  []
 
-[7] (./a1.aux)
+
+Underfull \hbox (badness 10000) in paragraph at lines 216--224
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 216--224
+
+ []
+
+[7 <../plots/accuracies_augmented.jpg>]
+Overfull \hbox (55.73094pt too wide) in paragraph at lines 234--235
+ [] 
+ []
+
+<../plots/final_model_accuracies.jpg, id=43, 803.0pt x 602.25pt>
+File: ../plots/final_model_accuracies.jpg Graphic file (type jpg)
+
+<use ../plots/final_model_accuracies.jpg>
+Package pdftex.def Info: ../plots/final_model_accuracies.jpg used on input line
+ 238.
+(pdftex.def)             Requested size: 341.43306pt x 256.07692pt.
+ [8 <../plots/final_model_accuracies.jpg>] (./a1.aux)
 
 LaTeX Warning: There were multiply-defined labels.
 
  ) 
 Here is how much of TeX's memory you used:
- 2527 strings out of 493014
- 34091 string characters out of 6133351
- 100558 words of memory out of 5000000
- 6024 multiletter control sequences out of 15000+600000
+ 3263 strings out of 493014
+ 46249 string characters out of 6133351
+ 114588 words of memory out of 5000000
+ 6724 multiletter control sequences out of 15000+600000
  11503 words of font info for 45 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 37i,7n,26p,999b,314s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 38i,7n,35p,999b,363s stack positions out of 5000i,500n,10000p,200000b,80000s
 </usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb
 ></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb>
 </usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb><
@@ -384,10 +447,10 @@ e/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive
 /2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy5.pfb></usr/local/texlive/2
 016/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/local/texlive/201
 6/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb>
-Output written on a1.pdf (7 pages, 359500 bytes).
+Output written on a1.pdf (8 pages, 435385 bytes).
 PDF statistics:
- 91 PDF objects out of 1000 (max. 8388607)
- 63 compressed objects within 1 object stream
+ 95 PDF objects out of 1000 (max. 8388607)
+ 65 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
- 16 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 21 words of extra memory for PDF output out of 10000 (max. 10000000)
 
